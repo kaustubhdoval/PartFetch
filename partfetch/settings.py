@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QFileDialog, QHBoxLayout
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QDesktopServices
 import os
 
 class SettingsDialog(QDialog):
@@ -26,6 +27,10 @@ class SettingsDialog(QDialog):
         open_btn.clicked.connect(self.open_output_folder)
         layout.addWidget(open_btn)
 
+        gh_btn = QPushButton("GitHub Repository")
+        open_btn.clicked.connect(lambda: self.open_link("https://github.com/kaustubhdoval/PartFetch"))
+        layout.addWidget(gh_btn)
+
         # Credits
         credits = QLabel("PartFetch Utility\nPowered by easyeda2kicad\n© 2026 Kaustubh")
         credits.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -47,3 +52,9 @@ class SettingsDialog(QDialog):
             os.startfile(self.result_path)
         else:
             QFileDialog.getExistingDirectory(self, "Select Output Folder", self.result_path)
+    
+    def open_link(self, url):
+        if not url.startswith(('http://', 'https://')):
+            url = 'http://' + url # Ensure a valid scheme is present
+        
+        QDesktopServices.openUrl(QUrl(url))

@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QButtonGroup, QPushButton, QProgressBar, QHBoxLayout
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 
 class MainDialog(QDialog):
     closeRequested = Signal()
@@ -16,27 +16,39 @@ class MainDialog(QDialog):
 
     def setup_ui(self):
         layout = QVBoxLayout()
+
+        # ASCII Art
+        ascii_art = "  ____            _   _____    _       _     \n" + \
+            "|  _ \ __ _ _ __| |_|  ___|__| |_ ___| |__  \n" + \
+            "| |_) / _` | '__| __| |_ / _ \ __/ __| '_ \ \n" + \
+            "|  __/ (_| | |  | |_|  _|  __/ || (__| | | |\n" + \
+            "|_|   \__,_|_|   \__|_|  \___|\__\___|_| |_|\n"
+        
+        art_label = QLabel(ascii_art)
+        art_label.setStyleSheet("font-family: 'Consolas', 'Courier New', monospace; font-size: 9px;")
+        art_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        layout.addWidget(art_label)
+
         self.part_input = QLineEdit()
         self.part_input.setPlaceholderText("LCSC Part Number")
         layout.addWidget(self.part_input)
 
-        self.radio_group = QButtonGroup(self)
         self.radio_all = QRadioButton("All")
         self.radio_footprint = QRadioButton("Footprint")
         self.radio_symbol = QRadioButton("Schematic")
         self.radio_3d = QRadioButton("3D Model")
         self.radio_all.setChecked(True)
-        self.radio_group.addButton(self.radio_all)
-        self.radio_group.addButton(self.radio_footprint)
-        self.radio_group.addButton(self.radio_symbol)
-        self.radio_group.addButton(self.radio_3d)
 
-        radio_layout = QHBoxLayout()
-        radio_layout.addWidget(self.radio_all)
-        radio_layout.addWidget(self.radio_footprint)
-        radio_layout.addWidget(self.radio_symbol)
-        radio_layout.addWidget(self.radio_3d)
-        layout.addLayout(radio_layout)
+        # Radio layout: 'AllBtn' on one line, others on next line
+        radio_all_layout = QHBoxLayout()
+        radio_all_layout.addWidget(self.radio_all)
+        layout.addLayout(radio_all_layout)
+
+        radio_others_layout = QHBoxLayout()
+        radio_others_layout.addWidget(self.radio_footprint)
+        radio_others_layout.addWidget(self.radio_symbol)
+        radio_others_layout.addWidget(self.radio_3d)
+        layout.addLayout(radio_others_layout)
 
         btn_layout = QHBoxLayout()
         self.download_btn = QPushButton("Download")
@@ -57,6 +69,7 @@ class MainDialog(QDialog):
 
         self.download_btn.clicked.connect(self.start_download)
         self.settings_btn.clicked.connect(self.show_settings)
+
 
     def closeEvent(self, event):
         event.ignore()
