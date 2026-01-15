@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QButtonGroup, QPushButton, QProgressBar, QHBoxLayout
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QCheckBox, QPushButton, QProgressBar, QHBoxLayout
 from PySide6.QtCore import Signal, Qt
 
 global legacyMode
@@ -30,6 +30,7 @@ class MainDialog(QDialog):
         art_label = QLabel(ascii_art)
         art_label.setStyleSheet("font-family: 'Consolas', 'Courier New', monospace; font-size: 9px;")
         art_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        art_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(art_label)
 
         self.part_input = QLineEdit()
@@ -37,10 +38,15 @@ class MainDialog(QDialog):
         layout.addWidget(self.part_input)
 
         self.radio_all = QRadioButton("All")
-        self.radio_footprint = QRadioButton("Footprint")
-        self.radio_symbol = QRadioButton("Schematic")
-        self.radio_3d = QRadioButton("3D Model")
+        self.check_footprint = QCheckBox("Footprint")
+        self.check_symbol = QCheckBox("Schematic")
+        self.check_3d = QCheckBox("3D Model")
         self.radio_all.setChecked(True)
+
+        self.check_footprint.toggled.connect(self.sync_selection)
+        self.check_symbol.toggled.connect(self.sync_selection)
+        self.check_3d.toggled.connect(self.sync_selection)
+        self.radio_all.toggled.connect(self.sync_selection)
 
         # Radio layout: 'AllBtn' on one line, others on next line
         radio_all_layout = QHBoxLayout()
@@ -48,9 +54,9 @@ class MainDialog(QDialog):
         layout.addLayout(radio_all_layout)
 
         radio_others_layout = QHBoxLayout()
-        radio_others_layout.addWidget(self.radio_footprint)
-        radio_others_layout.addWidget(self.radio_symbol)
-        radio_others_layout.addWidget(self.radio_3d)
+        radio_others_layout.addWidget(self.check_footprint)
+        radio_others_layout.addWidget(self.check_symbol)
+        radio_others_layout.addWidget(self.check_3d)
         layout.addLayout(radio_others_layout)
 
         btn_layout = QHBoxLayout()
@@ -109,11 +115,11 @@ class MainDialog(QDialog):
         if self.radio_all.isChecked():
             args += ["--full"]
         else:
-            if self.radio_symbol.isChecked():
+            if self.check_symbol.isChecked():
                 args += ["--symbol"]
-            if self.radio_footprint.isChecked():
+            if self.check_footprint.isChecked():
                 args += ["--footprint"]
-            if self.radio_3d.isChecked():
+            if self.check_3d.isChecked():
                 args += ["--3d"]
         args += ["--lcsc_id=" + part_number]
         args += ["--overwrite"]  # Always overwrite for now
@@ -145,3 +151,20 @@ class MainDialog(QDialog):
         if exit_code != 0 or "complete" not in status.lower():
             from PySide6.QtWidgets import QMessageBox
             QMessageBox.information(self, "CLI Output", output)
+
+    def sync_selection(self):
+        any_checked = (
+            self.check_footprint.isChecked()
+            or self.check_symbol.isChecked()
+            or self.check_3d.isChecked()
+        )
+
+        self.radio_all.blockSignals(True)
+        self.radio_all.setChecked(not any_checked)
+        self.radio_all.blockSignals(False)
+
+        if self.radio_all.isChecked():
+            for cb in (self.check_footprint, self.check_symbol, self.check_3d):
+                cb.blockSignals(True)
+                cb.setChecked(False)
+                cb.blockSignals(False)
