@@ -1,6 +1,9 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QButtonGroup, QPushButton, QProgressBar, QHBoxLayout
 from PySide6.QtCore import Signal, Qt
 
+global legacyMode
+legacyMode = False
+
 class MainDialog(QDialog):
     closeRequested = Signal()
 
@@ -18,7 +21,7 @@ class MainDialog(QDialog):
         layout = QVBoxLayout()
 
         # ASCII Art
-        ascii_art = "  ____            _   _____    _       _     \n" + \
+        ascii_art = " ____            _   _____    _       _     \n" + \
             "|  _ \ __ _ _ __| |_|  ___|__| |_ ___| |__  \n" + \
             "| |_) / _` | '__| __| |_ / _ \ __/ __| '_ \ \n" + \
             "|  __/ (_| | |  | |_|  _|  __/ || (__| | | |\n" + \
@@ -114,6 +117,9 @@ class MainDialog(QDialog):
                 args += ["--3d"]
         args += ["--lcsc_id=" + part_number]
         args += ["--overwrite"]  # Always overwrite for now
+        
+        if legacyMode:
+            args += ["--v5"]
 
         # Start CLIWorker in QThread
         from PySide6.QtCore import QThread

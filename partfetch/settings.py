@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QFileDialog, QHBoxLayout
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QFileDialog, QHBoxLayout, QRadioButton
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 import os
@@ -7,7 +7,7 @@ class SettingsDialog(QDialog):
     def __init__(self, tool_path, result_path, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
-        self.setFixedSize(320, 180)
+        self.setFixedSize(320, 250)
         self.tool_path = tool_path
         self.result_path = result_path
         self.setup_ui()
@@ -22,6 +22,14 @@ class SettingsDialog(QDialog):
         # Result path
         result_label = QLabel(f"Result path: {self.result_path}")
         layout.addWidget(result_label)
+
+        legacy_btn = QRadioButton("KiCad Legacy Mode (v5)")
+        legacy_btn.setChecked(False)
+        layout.addWidget(legacy_btn)
+
+        if legacy_btn.isChecked():
+            from dialog import legacyMode
+            legacyMode = True
 
         open_btn = QPushButton("Open Output Folder")
         open_btn.clicked.connect(self.open_output_folder)
