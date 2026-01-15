@@ -20,7 +20,7 @@ class SettingsDialog(QDialog):
         layout.addWidget(version_label)
 
         # Result path
-        result_label = QLabel(f"Result path: {self.result_path}")
+        result_label = QLabel(f"Result path:\n{self.result_path}")
         layout.addWidget(result_label)
 
         legacy_btn = QRadioButton("KiCad Legacy Mode (v5)")
@@ -36,11 +36,11 @@ class SettingsDialog(QDialog):
         layout.addWidget(open_btn)
 
         gh_btn = QPushButton("GitHub Repository")
-        open_btn.clicked.connect(lambda: self.open_link("https://github.com/kaustubhdoval/PartFetch"))
+        gh_btn.clicked.connect(lambda: self.open_link("https://github.com/kaustubhdoval/PartFetch"))
         layout.addWidget(gh_btn)
 
         # Credits
-        credits = QLabel("PartFetch Utility\nPowered by easyeda2kicad\n© 2026 Kaustubh")
+        credits = QLabel("PartFetch Utility\nPowered by easyeda2kicad.py\n© 2026 Kaustubh")
         credits.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(credits)
 
@@ -56,10 +56,14 @@ class SettingsDialog(QDialog):
             return "Unknown"
 
     def open_output_folder(self):
-        if os.path.exists(self.result_path):
-            os.startfile(self.result_path)
+        if self.result_path and os.path.exists(self.result_path):
+            os.startfile(self.result_path)  # Windows
         else:
-            QFileDialog.getExistingDirectory(self, "Select Output Folder", self.result_path)
+            QFileDialog.getExistingDirectory(
+                self,
+                "Select Output Folder",
+                os.path.expanduser("~")
+            )
     
     def open_link(self, url):
         if not url.startswith(('http://', 'https://')):

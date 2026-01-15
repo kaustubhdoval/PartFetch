@@ -1,7 +1,9 @@
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu
 from PySide6.QtGui import QIcon, QAction
 from dialog import MainDialog
+from settings import SettingsDialog
 import sys
+import os
 
 APP_NAME = "PartFetch"
 ICON_PATH = "partfetch/assets/app.ico"  # Update with actual path
@@ -18,10 +20,10 @@ def create_tray(app):
     menu.addAction(exit_action)
     tray_icon.setContextMenu(menu)
 
-    # Dummy tool path and result path for now
-    tool_path = "easyeda2kicad"  # Update with actual path logic
-    result_path = "%LOCALAPPDATA%/PartFetch/results"  # Update with actual logic
-    from settings import SettingsDialog
+    user_docs = os.path.join(os.path.expanduser("~"), "Documents", "KiCad", "easyeda2kicad") 
+    result_path = user_docs  # Output directory for results
+    tool_path = "easyeda2kicad"
+
     settings_dialog = SettingsDialog(tool_path, result_path)
 
     dialog = MainDialog(settings_dialog)
