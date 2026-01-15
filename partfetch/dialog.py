@@ -90,7 +90,7 @@ class MainDialog(QDialog):
         from PySide6.QtGui import QGuiApplication
         screen = QGuiApplication.primaryScreen().geometry()
         x = screen.x() + screen.width() - self.width() - 20
-        y = screen.y() + screen.height() - self.height() - 40
+        y = screen.y() + screen.height() - self.height() - 100
         self.move(x, y)
         super().showEvent(event)
 

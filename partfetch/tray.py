@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu
-from PySide6.QtGui import QIcon, QAction
+from PySide6.QtGui import QIcon, QAction, QCursor
+from PySide6.QtCore import Qt
 from dialog import MainDialog
 from settings import SettingsDialog
 import sys
@@ -9,30 +10,45 @@ APP_NAME = "PartFetch"
 ICON_PATH = "partfetch/assets/app.ico"  # Update with actual path
 
 def create_tray(app):
-    tray_icon = QSystemTrayIcon(QIcon(ICON_PATH), app)
-    menu = QMenu()
-    show_action = QAction("Show Window")
-    settings_action = QAction("Settings")
-    exit_action = QAction("Exit")
-    menu.addAction(show_action)
-    menu.addAction(settings_action)
-    menu.addSeparator()
-    menu.addAction(exit_action)
-    tray_icon.setContextMenu(menu)
+    app.setQuitOnLastWindowClosed(False)
 
+    app.tray_icon = QSystemTrayIcon(QIcon(ICON_PATH))
+    tray_icon = app.tray_icon
+
+    app.tray_menu = QMenu()
+    tray_menu = app.tray_menu
+    tray_menu.setTitle("Hello Nerd :)")
+
+    # Set Paths
     user_docs = os.path.join(os.path.expanduser("~"), "Documents", "KiCad", "easyeda2kicad") 
     result_path = user_docs  # Output directory for results
     tool_path = "easyeda2kicad"
 
-    settings_dialog = SettingsDialog(tool_path, result_path)
+    open_action = QAction("Open", tray_menu)
+    settings_action = QAction("Settings", tray_menu)
+    quit_action = QAction("Quit", tray_menu)
 
+    tray_menu.addAction(open_action)
+    tray_menu.addAction(settings_action)
+    tray_menu.addSeparator()
+    tray_menu.addAction(quit_action)
+
+    tray_icon.setContextMenu(tray_menu)
+
+    settings_dialog = SettingsDialog(tool_path, result_path)
     dialog = MainDialog(settings_dialog)
 
-    show_action.triggered.connect(dialog.show)
-    settings_action.triggered.connect(settings_dialog.show)
-    exit_action.triggered.connect(app.quit)
-    tray_icon.activated.connect(lambda reason: dialog.show() if reason == QSystemTrayIcon.ActivationReason.Trigger else None)
+    dialog.setWindowFlags(Qt.WindowType.Window)
+    settings_dialog.setWindowFlags(Qt.WindowType.Window)
 
-    dialog.closeRequested.connect(dialog.hide)
+    open_action.triggered.connect(dialog.show)
+    settings_action.triggered.connect(settings_dialog.show)
+    quit_action.triggered.connect(app.quit)
+
+    tray_icon.activated.connect(
+        lambda r: dialog.show() if r == QSystemTrayIcon.ActivationReason.Trigger else None
+    )
+
     tray_icon.show()
     return tray_icon
+
