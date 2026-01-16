@@ -3,11 +3,10 @@ from PySide6.QtGui import QIcon, QAction, QCursor
 from PySide6.QtCore import Qt
 from dialog import MainDialog
 from settings import SettingsDialog
-import sys
 import os
 
 APP_NAME = "PartFetch"
-ICON_PATH = "partfetch/assets/app.ico"  # Update with actual path
+ICON_PATH = "partfetch/assets/PartFetchLogo.ico"  
 
 def create_tray(app):
     app.setQuitOnLastWindowClosed(False)
