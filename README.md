@@ -36,12 +36,18 @@ PartFetch is a simple utility designed to streamline the process of installing K
 2. Run the main.py script (Python 3.8+)
 3. Application should show up on the System Tray
 
+Script to generate the EXE:
+
+```
+pyinstaller partfetch/main.py --onefile --windowed --icon=partfetch/assets/PartFetchLogo.ico --name PartFetch --add-data "partfetch/assets/PartFetchLogo.ico;assets"
+```
+
 <!-- ROADMAP -->
 
 ## Roadmap
 
-- [ ] Add images in the ReadMe
-- [ ] Add EXE download
+- [x] Add images in the ReadMe
+- [x] Add EXE download
 - [ ] Verify MacOS functionality
 - [ ] Verify Linux functionality
 

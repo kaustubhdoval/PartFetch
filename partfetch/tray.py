@@ -4,14 +4,28 @@ from PySide6.QtCore import Qt
 from dialog import MainDialog
 from settings import SettingsDialog
 import os
+import sys
 
 APP_NAME = "PartFetch"
-ICON_PATH = "partfetch/assets/PartFetchLogo.ico"  
+
+if getattr(sys, 'frozen', False):
+    # Running in a PyInstaller bundle
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+else:
+    # Running in Dev Mode
+    base_path = os.path.dirname(os.path.abspath(__file__))
+ICON_PATH = os.path.join(base_path, "assets", "PartFetchLogo.ico")
 
 def create_tray(app):
+
     app.setQuitOnLastWindowClosed(False)
 
-    app.tray_icon = QSystemTrayIcon(QIcon(ICON_PATH))
+
+    # Check if icon exists and warn if not
+    if not os.path.exists(ICON_PATH):
+        print(f"WARNING: Tray icon not found at {ICON_PATH}")
+    icon_obj = QIcon(ICON_PATH) if os.path.exists(ICON_PATH) else QIcon()
+    app.tray_icon = QSystemTrayIcon(icon_obj)
     tray_icon = app.tray_icon
 
     app.tray_menu = QMenu()
