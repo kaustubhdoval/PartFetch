@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/kaustubhdoval/partfetch">
-    <img src="assets/PartFetchLogo.png" alt="Logo" width="80" height="80">
+    <img src="partfetch/assets/PartFetchLogo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">PartFetch</h3>
@@ -21,7 +21,7 @@
 </div>
 
 <div style="text-align: center;">
-  <img src="assets/Screenshot.jpg" alt="Utility Screenshot">
+  <img src="partfetch/assets/Screenshot.jpg" alt="Utility Screenshot">
 </div>
 
 <!-- ABOUT THE PROJECT -->
