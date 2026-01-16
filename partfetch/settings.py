@@ -1,12 +1,13 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QFileDialog, QHBoxLayout
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QFileDialog, QHBoxLayout, QRadioButton
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QDesktopServices
 import os
 
 class SettingsDialog(QDialog):
     def __init__(self, tool_path, result_path, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
-        self.setFixedSize(320, 180)
+        self.setFixedSize(320, 250)
         self.tool_path = tool_path
         self.result_path = result_path
         self.setup_ui()
@@ -19,15 +20,27 @@ class SettingsDialog(QDialog):
         layout.addWidget(version_label)
 
         # Result path
-        result_label = QLabel(f"Result path: {self.result_path}")
+        result_label = QLabel(f"Result path:\n{self.result_path}")
         layout.addWidget(result_label)
+
+        legacy_btn = QRadioButton("KiCad Legacy Mode (v5)")
+        legacy_btn.setChecked(False)
+        layout.addWidget(legacy_btn)
+
+        if legacy_btn.isChecked():
+            from dialog import legacyMode
+            legacyMode = True
 
         open_btn = QPushButton("Open Output Folder")
         open_btn.clicked.connect(self.open_output_folder)
         layout.addWidget(open_btn)
 
+        gh_btn = QPushButton("GitHub Repository")
+        gh_btn.clicked.connect(lambda: self.open_link("https://github.com/kaustubhdoval/PartFetch"))
+        layout.addWidget(gh_btn)
+
         # Credits
-        credits = QLabel("PartFetch Utility\nPowered by easyeda2kicad\n© 2026 Kaustubh")
+        credits = QLabel("PartFetch Utility\nPowered by easyeda2kicad.py\n© 2026 Kaustubh")
         credits.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(credits)
 
@@ -43,7 +56,17 @@ class SettingsDialog(QDialog):
             return "Unknown"
 
     def open_output_folder(self):
-        if os.path.exists(self.result_path):
-            os.startfile(self.result_path)
+        if self.result_path and os.path.exists(self.result_path):
+            os.startfile(self.result_path)  # Windows
         else:
-            QFileDialog.getExistingDirectory(self, "Select Output Folder", self.result_path)
+            QFileDialog.getExistingDirectory(
+                self,
+                "Select Output Folder",
+                os.path.expanduser("~")
+            )
+    
+    def open_link(self, url):
+        if not url.startswith(('http://', 'https://')):
+            url = 'http://' + url # Ensure a valid scheme is present
+        
+        QDesktopServices.openUrl(QUrl(url))
